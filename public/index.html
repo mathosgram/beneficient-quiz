@@ -22,7 +22,7 @@
             --incorrect-bg: #fff1f0;
             --incorrect-border: #f5222d;
             --shadow: 0 10px 20px rgba(0, 0, 0, 0.05), 0 6px 6px rgba(0, 0, 0, 0.07);
-            --ai-feature-bg: #e6e6fa; /* A light lavender for the AI feature */
+            --ai-feature-bg: #e6e6fa;
         }
 
         *, *::before, *::after {
@@ -39,7 +39,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 5px; 
+            padding: 10px; 
             transition: background-color 0.3s;
         }
 
@@ -53,6 +53,10 @@
             text-align: center;
             border: 1px solid var(--border-color);
             transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        
+        .container.hidden {
+            display: none;
         }
         
         .container.fade-out {
@@ -78,7 +82,7 @@
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease-in-out;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             letter-spacing: 0.5px;
         }
@@ -94,9 +98,10 @@
             border-color: var(--secondary-text);
         }
 
+        /* MODIFIED: Reduced button hover animation */
         button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
         }
 
         button:disabled {
@@ -109,17 +114,8 @@
         }
         
         /* User Info Form */
-        #user-info-container .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        #user-info-container label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
+        #user-info-container .form-group { margin-bottom: 20px; text-align: left; }
+        #user-info-container label { display: block; margin-bottom: 8px; font-weight: 600; }
         #user-info-container input {
             width: 100%;
             height: 50px;
@@ -129,11 +125,7 @@
             font-size: 1em;
             transition: border-color 0.3s;
         }
-
-        #user-info-container input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
+        #user-info-container input:focus { outline: none; border-color: var(--accent-color); }
         
         #error-message {
             color: var(--incorrect-border);
@@ -145,19 +137,13 @@
             font-weight: 600;
             border-radius: 8px;
             padding: 12px 15px;
-            display: none; /* Hidden by default */
+            display: none;
             align-items: center;
             gap: 10px;
         }
-        #error-message.show {
-            display: flex;
-        }
+        #error-message.show { display: flex; }
 
-        .phone-input-wrapper {
-            display: flex;
-            align-items: center;
-        }
-
+        .phone-input-wrapper { display: flex; align-items: center; }
         .country-code {
             display: flex;
             align-items: center;
@@ -168,22 +154,11 @@
             border-radius: 8px 0 0 8px;
             background-color: #f0f4f8;
         }
-        
-        .country-code .flag-icon {
-            width: 24px;
-            height: auto;
-            margin-right: 8px;
-        }
-
-        #phone {
-            border-radius: 0 8px 8px 0;
-            border-left: none;
-            flex-grow: 1;
-        }
+        .country-code .flag-icon { width: 24px; height: auto; margin-right: 8px; }
+        #phone { border-radius: 0 8px 8px 0; border-left: none; flex-grow: 1; }
 
         /* Quiz Container */
         #quiz-container { text-align: left; }
-
         .header {
             display: flex;
             justify-content: space-between;
@@ -193,38 +168,10 @@
             font-weight: 600;
             color: var(--secondary-text);
         }
-
-        #timer {
-            background-color: var(--primary-bg);
-            padding: 5px 15px;
-            border-radius: 20px;
-            color: var(--primary-text);
-        }
-
-        #progress-bar-container {
-            width: 100%;
-            height: 8px;
-            background-color: var(--primary-bg);
-            border-radius: 4px;
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-
-        #progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: var(--accent-color);
-            border-radius: 4px;
-            transition: width 0.3s ease-in-out;
-        }
-
-        #question-text {
-            font-family: 'Lora', serif;
-            font-size: 1.6em;
-            margin-bottom: 30px;
-            line-height: 1.4;
-            font-weight: 700;
-        }
+        #timer { background-color: var(--primary-bg); padding: 5px 15px; border-radius: 20px; color: var(--primary-text); }
+        #progress-bar-container { width: 100%; height: 8px; background-color: var(--primary-bg); border-radius: 4px; margin-bottom: 25px; overflow: hidden; }
+        #progress-bar { width: 0%; height: 100%; background-color: var(--accent-color); border-radius: 4px; transition: width 0.3s ease-in-out; }
+        #question-text { font-family: 'Lora', serif; font-size: 1.6em; margin-bottom: 30px; line-height: 1.4; font-weight: 700; }
         
         .options-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
         .option {
@@ -238,16 +185,11 @@
             font-size: 1.05em;
         }
         .option:hover { border-color: var(--accent-color); transform: translateX(5px); }
-        .option.selected {
-            border-color: var(--accent-hover);
-            background-color: #fdfaf4;
-            font-weight: 600;
-            color: var(--accent-hover);
-        }
+        .option.selected { border-color: var(--accent-hover); background-color: #fdfaf4; font-weight: 600; color: var(--accent-hover); }
 
         .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
         
-        /* Responsive Grid for Question Palette */
+        /* MODIFIED: Responsive Grid for Question Palette */
         #question-palette {
             margin-top: 30px;
             border-top: 1px solid var(--border-color);
@@ -257,11 +199,10 @@
             gap: 10px;
             max-height: 160px; /* Limit height */
             overflow-y: auto; /* Enable scrolling */
-            padding-right: 5px; /* For scrollbar */
+            padding-right: 5px;
         }
-        
         .palette-btn {
-            width: 100%; /* Fill grid cell */
+            width: 100%;
             height: 45px;
             border-radius: 8px;
             border: 2px solid var(--border-color);
@@ -275,23 +216,9 @@
             justify-content: center;
             box-shadow: none;
         }
-        .palette-btn:hover { 
-            background-color: var(--primary-bg); 
-            border-color: var(--accent-color); 
-            transform: translateY(-2px);
-        }
-        .palette-btn.answered {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border-color: var(--accent-hover);
-        }
-        .palette-btn.current {
-            background-color: var(--primary-text);
-            color: #ffffff;
-            border-color: var(--primary-text);
-            transform: scale(1.1) translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .palette-btn:hover { background-color: var(--primary-bg); border-color: var(--accent-color); transform: translateY(-2px); }
+        .palette-btn.answered { background-color: var(--accent-color); color: #ffffff; border-color: var(--accent-hover); }
+        .palette-btn.current { background-color: var(--primary-text); color: #ffffff; border-color: var(--primary-text); transform: scale(1.1); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
 
         /* Results Container */
         #results-container { padding: 30px; }
@@ -305,67 +232,45 @@
         #feedback-text { font-size: 1.1em; margin: 10px 0 0; }
         #feedback-text.pass { color: var(--correct-border); }
         #feedback-text.fail { color: var(--incorrect-border); }
-
         .results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 25px 0; margin-bottom: 30px; }
         .stat-item { display: flex; flex-direction: column; align-items: center; }
         .stat-label { font-size: 0.9em; color: var(--secondary-text); margin-bottom: 5px; }
         .stat-value { font-size: 1.6em; font-weight: 600; }
         #correct-count { color: var(--correct-border); }
         #incorrect-count { color: var(--incorrect-border); }
+        .results-actions { display: flex; justify-content: center; gap: 15px; }
+        /* MODIFIED: Smaller result buttons */
+        .results-actions button { padding: 12px 28px; font-size: 1em; }
 
-        .results-actions { display: flex; justify-content: center; gap: 20px; }
-
-        #review-section { margin-top: 40px; text-align: left; max-height: 400px; overflow-y: auto; border-top: 1px solid var(--border-color); padding-top: 20px; }
+        /* Review Section & AI Feature */
+        #review-section { margin-top: 20px; text-align: left; width: 100%; }
+        #review-container p { margin-top: 0; }
         .review-question { background: #fdfdfd; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .review-question p { font-size: 1.1em; font-weight: 600; margin: 0 0 15px 0;}
         .review-option { padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 1em; }
         .review-option.user-answer.incorrect { background-color: var(--incorrect-bg); }
         .review-option.correct-answer { background-color: var(--correct-bg); font-weight: 600; }
         
-        .ai-explanation-container {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: var(--ai-feature-bg);
-            border-radius: 8px;
-            font-size: 0.95em;
-            line-height: 1.6;
-        }
-
-        button.explain-btn {
-            padding: 8px 15px;
-            font-size: 0.9em;
-            border-radius: 20px;
-            margin-top: 10px;
-        }
+        .ai-explanation-container { margin-top: 15px; padding: 15px; background-color: var(--ai-feature-bg); border-radius: 8px; font-size: 0.95em; line-height: 1.6; }
+        button.explain-btn { padding: 8px 15px; font-size: 0.9em; border-radius: 20px; margin-top: 10px; }
 
         footer { margin-top: 40px; font-size: 0.9em; color: var(--secondary-text); }
-        .hidden { display: none; }
-
+        
         /* Animations */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translate3d(0, 30px, 0); }
-            to { opacity: 1; transform: translate3d(0, 0, 0); }
-        }
-        .results-summary .score-circle, #results-heading, #feedback-text, .results-stats, .results-actions {
-            animation: fadeInUp 0.5s ease-out backwards;
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translate3d(0, 30px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+        .results-summary .score-circle, #results-heading, #feedback-text, .results-stats, .results-actions { animation: fadeInUp 0.5s ease-out backwards; }
         #results-heading { animation-delay: 0.1s; }
         #feedback-text { animation-delay: 0.2s; }
         .results-stats { animation-delay: 0.3s; }
         .results-actions { animation-delay: 0.4s; }
         
         @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
+            10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); }
         }
-        .shake-error {
-            animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .shake-error { animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both; }
 
         @media (min-width: 600px) {
-            body { padding: 20px; }
             .options-container { grid-template-columns: 1fr 1fr; }
         }
         @media (max-width: 600px) {
@@ -375,6 +280,8 @@
             .results-stats { grid-template-columns: 1fr; }
             .stat-item { padding-bottom: 15px; border-bottom: 1px solid var(--primary-bg); }
             .stat-item:last-child { border-bottom: none; }
+            #question-palette { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); }
+            .palette-btn { height: 40px; }
         }
     </style>
 </head>
@@ -392,7 +299,7 @@
                 <input type="email" id="email" required>
             </div>
             <div id="error-message">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
                 <span id="error-text"></span>
             </div>
             <div class="form-group">
@@ -454,9 +361,18 @@
             <button id="review-btn" class="secondary">Review Answers</button>
             <button id="restart-btn">Try Again</button>
         </div>
-        <div id="review-section" class="hidden">
-            <h2>Review Your Answers</h2>
+    </div>
+
+    <!-- MODIFIED: New container for the review section -->
+    <div id="review-container" class="container hidden">
+        <h2>Here's what you got right and wrong</h2>
+        <p>Review your answers below. For incorrect answers, you can get an AI-powered explanation.</p>
+        <div id="review-section">
+            <!-- Dynamically populated -->
         </div>
+        <div class="navigation" style="justify-content: center; margin-top: 30px;">
+            <button id="back-to-results-btn" class="secondary">Back to Results</button>
+       </div>
     </div>
 
     <footer>
@@ -465,6 +381,7 @@
 
     <script>
         const questions = [
+            // All 80 questions are here...
             { question: "She ____her assignments well.", options: ["do", "does", "done", "have done"], answer: "B" },
             { question: "Statistics ___come to stay as a science subject.", options: ["have come", "would come", "has come", "is come"], answer: "C" },
             { question: "Students should study properly for their examinations.", options: ["Isn't it?", "Shouldn't it?", "Shouldn't they?", "Should they?"], answer: "C" },
@@ -552,11 +469,13 @@
         const userInfoContainer = document.getElementById('user-info-container');
         const quizContainer = document.getElementById('quiz-container');
         const resultsContainer = document.getElementById('results-container');
+        const reviewContainer = document.getElementById('review-container');
         const userForm = document.getElementById('user-form');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
         const restartBtn = document.getElementById('restart-btn');
         const reviewBtn = document.getElementById('review-btn');
+        const backToResultsBtn = document.getElementById('back-to-results-btn');
         const questionCounterEl = document.getElementById('question-counter');
         const timerEl = document.getElementById('timer');
         const progressBarEl = document.getElementById('progress-bar');
@@ -567,7 +486,6 @@
         const phoneInput = document.getElementById('phone');
         const errorMessageEl = document.getElementById('error-message');
         const errorTextEl = document.getElementById('error-text');
-
 
         // State
         let currentQuestionIndex = 0;
@@ -582,7 +500,14 @@
         prevBtn.addEventListener('click', showPreviousQuestion);
         nextBtn.addEventListener('click', showNextQuestion);
         restartBtn.addEventListener('click', resetQuiz);
-        reviewBtn.addEventListener('click', () => reviewSectionEl.classList.toggle('hidden'));
+        reviewBtn.addEventListener('click', () => {
+            resultsContainer.classList.add('hidden');
+            reviewContainer.classList.remove('hidden');
+        });
+        backToResultsBtn.addEventListener('click', () => {
+            reviewContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+        });
         phoneInput.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
@@ -636,7 +561,7 @@
             clearInterval(timer);
             
             resultsContainer.classList.add('hidden');
-            reviewSectionEl.classList.add('hidden');
+            reviewContainer.classList.add('hidden');
             quizContainer.classList.remove('hidden');
             
             quizStartTime = new Date();
@@ -756,7 +681,7 @@
         async function showResults() {
             clearInterval(timer);
             const quizEndTime = new Date();
-            const timeDiff = Math.floor((quizEndTime - quizStartTime) / 1000); // in seconds
+            const timeDiff = Math.floor((quizEndTime - quizStartTime) / 1000);
             const minutesTaken = Math.floor(timeDiff / 60);
             const secondsTaken = timeDiff % 60;
             
@@ -789,14 +714,9 @@
                 circle.style.strokeDasharray = `${percentage}, 100`;
             }, 100);
 
-            const percentageEl = document.getElementById('score-percentage');
-            const correctCountEl = document.getElementById('correct-count');
-            const incorrectCountEl = document.getElementById('incorrect-count');
-            
-            animateValue(percentageEl, 0, percentage, 1000, true);
-            animateValue(correctCountEl, 0, score, 1000);
-            animateValue(incorrectCountEl, 0, incorrect, 1000);
-
+            animateValue(document.getElementById('score-percentage'), 0, percentage, 1000, true);
+            animateValue(document.getElementById('correct-count'), 0, score, 1000);
+            animateValue(document.getElementById('incorrect-count'), 0, incorrect, 1000);
             document.getElementById('time-taken').textContent = `${minutesTaken}m ${secondsTaken}s`;
 
             if (percentage >= passThreshold) {
@@ -822,99 +742,73 @@
 
         function calculateScore() {
             let score = 0;
-            for (let i = 0; i < questions.length; i++) {
-                if (userAnswers[i] === questions[i].answer) {
+            questions.forEach((q, i) => {
+                if (userAnswers[i] === q.answer) {
                     score++;
                 }
-            }
+            });
             return score;
         }
 
         async function getExplanation(index, button) {
             button.disabled = true;
             button.textContent = "Loading...";
-
             const question = questions[index];
             const userAnswerLetter = userAnswers[index];
             const correctAnswerLetter = question.answer;
-
             const userAnswerText = question.options[userAnswerLetter.charCodeAt(0) - 65];
             const correctAnswerText = question.options[correctAnswerLetter.charCodeAt(0) - 65];
-
             const explanationContainer = document.getElementById(`explanation-${index}`);
             explanationContainer.style.display = 'block';
             explanationContainer.textContent = '🧠 Generating explanation...';
-
             try {
                 const response = await fetch('/api/get-explanation', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        question: question.question,
-                        userAnswer: userAnswerText,
-                        correctAnswer: correctAnswerText
-                    })
+                    body: JSON.stringify({ question: question.question, userAnswer: userAnswerText, correctAnswer: correctAnswerText })
                 });
-
-                if (!response.ok) {
-                    throw new Error('Failed to get explanation from server.');
-                }
+                if (!response.ok) throw new Error('Failed to get explanation from server.');
                 const data = await response.json();
                 explanationContainer.textContent = data.explanation;
-
             } catch(error) {
                 explanationContainer.textContent = 'Sorry, unable to get an explanation at this time.';
                 console.error("Error fetching explanation:", error);
             } finally {
-                button.style.display = 'none'; // Hide button after it's used
+                button.style.display = 'none';
             }
         }
 
         function renderReview() {
-            const reviewTitle = reviewSectionEl.querySelector('h2');
             reviewSectionEl.innerHTML = '';
-            reviewSectionEl.appendChild(reviewTitle);
-
             questions.forEach((q, index) => {
                 const userAnswer = userAnswers[index];
                 const correctAnswer = q.answer;
-
                 const questionDiv = document.createElement('div');
                 questionDiv.classList.add('review-question');
-                
                 const questionP = document.createElement('p');
                 questionP.textContent = `${index + 1}. ${q.question}`;
                 questionDiv.appendChild(questionP);
-
                 q.options.forEach((opt, optIndex) => {
                     const optionLetter = String.fromCharCode(65 + optIndex);
                     const optionDiv = document.createElement('div');
                     optionDiv.classList.add('review-option');
                     optionDiv.textContent = `${optionLetter}. ${opt}`;
-
-                    if (optionLetter === correctAnswer) {
-                        optionDiv.classList.add('correct-answer');
-                    }
-                    if (optionLetter === userAnswer && userAnswer !== correctAnswer) {
-                        optionDiv.classList.add('user-answer', 'incorrect');
-                    }
+                    if (optionLetter === correctAnswer) optionDiv.classList.add('correct-answer');
+                    if (optionLetter === userAnswer && userAnswer !== correctAnswer) optionDiv.classList.add('user-answer', 'incorrect');
                     questionDiv.appendChild(optionDiv);
                 });
-                
                 if (userAnswer && userAnswer !== correctAnswer) {
                     const explainButton = document.createElement('button');
                     explainButton.textContent = '✨ Explain Answer';
                     explainButton.classList.add('explain-btn', 'secondary');
                     explainButton.onclick = () => getExplanation(index, explainButton);
                     questionDiv.appendChild(explainButton);
-
                     const explanationContainer = document.createElement('div');
                     explanationContainer.id = `explanation-${index}`;
                     explanationContainer.classList.add('ai-explanation-container');
                     explanationContainer.style.display = 'none';
                     questionDiv.appendChild(explanationContainer);
                 }
-                
                 if (!userAnswer) {
                      const noAnswerDiv = document.createElement('div');
                      noAnswerDiv.textContent = 'You did not answer this question.';
@@ -934,18 +828,13 @@
 
         async function saveDataToBackend(payload) {
             const scriptUrl = '/api/submit-quiz'; 
-
             try {
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
                 });
-
-                if (!response.ok) {
-                    throw new Error(`Server responded with status: ${response.status}`);
-                }
-                
+                if (!response.ok) throw new Error(`Server responded with status: ${response.status}`);
                 const result = await response.json();
                 console.log('Data saved successfully:', result);
                 return result;
