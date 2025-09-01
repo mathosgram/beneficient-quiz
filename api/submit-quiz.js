@@ -31,15 +31,22 @@ export default async function handler(request, response) {
             const { name, email, phone } = data;
             const userKey = `user:${email}`;
 
-            // Check if user exists. If not, initialize with quiz_attempts.
-            const userExists = await redis.exists(userKey);
-            if (!userExists) {
-                 await redis.hset(userKey, { name, email, phone, quiz_attempts: 0 });
-            } else {
-                 await redis.hset(userKey, { name, email, phone }); // Update details if they exist
-            }
+            // Fetch user data if it exists
+            const userData = await redis.hgetall(userKey);
 
-            return response.status(201).json({ message: 'User registered successfully.' });
+            if (userData) {
+                // User exists, check their attempts
+                const attempts = Number(userData.quiz_attempts) || 0;
+                if (attempts >= 3) {
+                    return response.status(403).json({ message: 'You have reached the maximum of 3 attempts.' });
+                }
+                // If they have attempts left, let them proceed.
+                return response.status(200).json({ message: 'Welcome back! Starting quiz.' });
+            } else {
+                // User does not exist, create a new record.
+                await redis.hset(userKey, { name, email, phone, quiz_attempts: 0 });
+                return response.status(201).json({ message: 'User registered successfully.' });
+            }
 
         } else if (action === 'save-results') {
             const { user, score, total, answers } = data;
@@ -57,10 +64,13 @@ export default async function handler(request, response) {
 
             await redis.hmset(resultKey, resultData);
             
-            // Atomically increment the user's quiz attempt counter
-            await redis.hincrby(userKey, 'quiz_attempts', 1);
+            // Atomically increment the user's quiz attempt counter and get the new value
+            const newAttempts = await redis.hincrby(userKey, 'quiz_attempts', 1);
 
-            return response.status(200).json({ message: 'Quiz results saved successfully.' });
+            return response.status(200).json({ 
+                message: 'Quiz results saved successfully.',
+                newAttempts: newAttempts 
+            });
         } else {
             return response.status(400).json({ message: 'Invalid action specified.' });
         }
