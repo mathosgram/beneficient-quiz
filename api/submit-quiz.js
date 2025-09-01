@@ -29,22 +29,37 @@ export default async function handler(request, response) {
         
         if (action === 'register-user') {
             const { name, email, phone } = data;
-            const userKey = `user:${email}`;
+            
+            // Check for uniqueness using Redis Sets for efficiency
+            const isEmailTaken = await redis.sismember('registered_emails', email);
+            if (isEmailTaken) {
+                return response.status(409).json({ message: 'This email is already registered.' });
+            }
 
-            // Fetch user data if it exists
+            const isPhoneTaken = await redis.sismember('registered_phones', phone);
+            if (isPhoneTaken) {
+                return response.status(409).json({ message: 'This phone number is already registered.' });
+            }
+
+            // User passed uniqueness checks, check their attempts (they might be returning)
+            const userKey = `user:${email}`;
             const userData = await redis.hgetall(userKey);
 
             if (userData) {
-                // User exists, check their attempts
+                // This case handles a user who registered but never finished a quiz. Let's check attempts anyway.
                 const attempts = Number(userData.quiz_attempts) || 0;
                 if (attempts >= 3) {
                     return response.status(403).json({ message: 'You have reached the maximum of 3 attempts.' });
                 }
-                // If they have attempts left, let them proceed.
                 return response.status(200).json({ message: 'Welcome back! Starting quiz.' });
             } else {
-                // User does not exist, create a new record.
-                await redis.hset(userKey, { name, email, phone, quiz_attempts: 0 });
+                // User is completely new. Create their record and add to uniqueness sets.
+                const multi = redis.multi();
+                multi.sadd('registered_emails', email);
+                multi.sadd('registered_phones', phone);
+                multi.hset(userKey, { name, email, phone, quiz_attempts: 0 });
+                await multi.exec();
+                
                 return response.status(201).json({ message: 'User registered successfully.' });
             }
 
@@ -58,13 +73,12 @@ export default async function handler(request, response) {
                 ...user,
                 score,
                 total,
-                answers: JSON.stringify(answers), // This already stores all answered questions
+                answers: JSON.stringify(answers),
                 completedAt: new Date().toISOString()
             };
 
             await redis.hmset(resultKey, resultData);
             
-            // Atomically increment the user's quiz attempt counter and get the new value
             const newAttempts = await redis.hincrby(userKey, 'quiz_attempts', 1);
 
             return response.status(200).json({ 
