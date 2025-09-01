@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Beneficient Assessment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://analytics.imoogleai.xyz/script.js" data-website-id="7a7e1e88-30eb-4517-8016-9f06aa9943cd"></script>
+    <style>
+        :root {
+            --primary-bg: #f0f4f8;
+            --container-bg: #ffffff;
+            --primary-text: #102a43;
+            --secondary-text: #486581;
+            --accent-color: #c59d5f;
+            --accent-hover: #b48a4f;
+            --border-color: #bcccdc;
+            --correct-bg: #e6f9f0;
+            --correct-border: #52c41a;
+            --incorrect-bg: #fff1f0;
+            --incorrect-border: #f5222d;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.05), 0 6px 6px rgba(0, 0, 0, 0.07);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        
+        .container.fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        h1, h2 {
+            font-family: 'Lora', serif;
+        }
+
+        h1 { font-size: 3em; margin-bottom: 10px; color: var(--primary-text); }
+        h2 { font-size: 2.5em; }
+
+        p { color: var(--secondary-text); }
+
+        button {
+            background: linear-gradient(145deg, var(--accent-color), var(--accent-hover));
+            color: #ffffff;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+        
+        button.secondary {
+             background: #f0f4f8;
+             color: var(--secondary-text);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+
+        button:disabled {
+            background: #bcccdc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* User Info Form */
+        #user-info-container .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        #user-info-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        #user-info-container input {
+            width: 100%;
+            height: 50px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        #user-info-container input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .phone-input-wrapper {
+            display: flex;
+            align-items: center;
+        }
+
+        .country-code {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-right: none;
+            border-radius: 8px 0 0 8px;
+            background-color: #f0f4f8;
+        }
+        
+        .country-code .flag-icon {
+            width: 24px;
+            height: auto;
+            margin-right: 8px;
+        }
+
+        #phone {
+            border-radius: 0 8px 8px 0;
+            border-left: none;
+            flex-grow: 1;
+        }
+
+        /* Quiz Container */
+        #quiz-container { text-align: left; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--secondary-text);
+        }
+
+        #timer {
+            background-color: var(--primary-bg);
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: var(--primary-text);
+        }
+
+        #progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--primary-bg);
+            border-radius: 4px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        #progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 4px;
+            transition: width 0.3s ease-in-out;
+        }
+
+        #question-text {
+            font-family: 'Lora', serif;
+            font-size: 1.6em;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            font-weight: 700;
+        }
+        
+        .options-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        .option {
+            background-color: var(--container-bg);
+            border: 2px solid var(--border-color);
+            padding: 18px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-size: 1.05em;
+        }
+        .option:hover { border-color: var(--accent-color); transform: translateX(5px); }
+        .option.selected {
+            border-color: var(--accent-hover);
+            background-color: #fdfaf4;
+            font-weight: 600;
+            color: var(--accent-hover);
+        }
+
+        .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
+        
+        /* Question Palette */
+        #question-palette {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+        .palette-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background-color: #fff;
+            color: var(--secondary-text);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .palette-btn:hover { background-color: var(--primary-bg); border-color: var(--accent-color); }
+        .palette-btn.answered { background-color: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .palette-btn.current {
+            background-color: var(--primary-text);
+            color: #fff;
+            border-color: var(--primary-text);
+            transform: scale(1.1);
+        }
+
+        /* Results Container */
+        #results-container p { font-size: 1.6em; margin: 20px 0 30px; }
+        #score-text strong { color: var(--accent-hover); font-size: 1.5em; }
+        #feedback-text { font-weight: 600; font-size: 1.2em; }
+        #feedback-text.pass { color: var(--correct-border); }
+        #feedback-text.fail { color: var(--incorrect-border); }
+        
+        #review-section { margin-top: 40px; text-align: left; }
+        .review-question {
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .review-question p { font-size: 1.1em; font-weight: 600; margin: 0 0 15px 0;}
+        .review-option {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+        .review-option.user-answer.incorrect { background-color: var(--incorrect-bg); }
+        .review-option.correct-answer { background-color: var(--correct-bg); font-weight: 600; }
+        
+        footer { margin-top: 40px; font-size: 0.9em; color: var(--secondary-text); }
+        .hidden { display: none; }
+
+        @media (min-width: 600px) { .options-container { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 600px) {
+            .container { padding: 25px; }
+            h1 { font-size: 2.2em; }
+            #question-text { font-size: 1.3em; }
+        }
+    </style>
+</head>
+<body>
+    <div id="user-info-container" class="container">
+        <h1>Welcome</h1>
+        <p>Please enter your details to begin the assessment.</p>
+        <form id="user-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="phone-input-wrapper">
+                    <div class="country-code">
+                        <svg class="flag-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2"><path fill="#008751" d="M0 0h3v2H0z"/><path fill="#fff" d="M1 0h1v2H1z"/></svg>
+                        <span>+234</span>
+                    </div>
+                    <input type="text" inputmode="numeric" id="phone" required pattern="\d{10,11}" minlength="10" maxlength="11" title="Please enter a 10 or 11-digit phone number (e.g., 8012345678)">
+                </div>
+            </div>
+            <button type="submit">Start Assessment</button>
+        </form>
+    </div>
+
+    <div id="quiz-container" class="container hidden">
+        <div class="header">
+            <div id="question-counter"></div>
+            <div id="timer">20:00</div>
+        </div>
+        <div id="progress-bar-container"><div id="progress-bar"></div></div>
+        <div id="question-text"></div>
+        <div id="options-container"></div>
+        <div class="navigation">
+            <button id="prev-btn" class="secondary">Previous</button>
+            <button id="next-btn">Next</button>
+        </div>
+        <div id="question-palette"></div>
+    </div>
+
+    <div id="results-container" class="container hidden">
+        <h2>Assessment Complete!</h2>
+        <p id="score-text"></p>
+        <p id="feedback-text"></p>
+        <button id="restart-btn">Try Again</button>
+        <div id="review-section">
+            <h2>Review Your Answers</h2>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by Imoogle Technology</p>
+    </footer>
+
+    <script>
+        const questions = [
+            { question: "She ____her assignments well.", options: ["do", "does", "done", "have done"], answer: "B" },
+            { question: "Statistics ___come to stay as a science subject.", options: ["have come", "would come", "has come", "is come"], answer: "C" },
+            { question: "Students should study properly for their examinations.", options: ["Isn't it?", "Shouldn't it?", "Shouldn't they?", "Should they?"], answer: "C" },
+            { question: "You will join the dance.", options: ["Willn't you?", "Can't you", "Won't you?", "Will you?"], answer: "C" },
+            { question: "A few of the men ____ present.", options: ["is", "have", "are", "has"], answer: "C" },
+            { question: "Everybody ____ prepared to go home.", options: ["are", "have", "be", "is"], answer: "D" },
+            { question: "Which of the following is the correct spelling?", options: ["Millennium", "Millenium", "Milennium", "Milenium"], answer: "A" },
+            { question: "Which of the following is the correct spelling?", options: ["Vigillance", "Vigilance", "Vigillance", "Vigilance"], answer: "B" },
+            { question: "Which of the following is the correct spelling?", options: ["Occassionally", "Occassionally", "Occasionally", "Occassionaly"], answer: "C" },
+            { question: "Which of the following is the correct spelling?", options: ["Missille", "Missile", "Misille", "Misile"], answer: "B" },
+            { question: "Janet is the ____ of the two ladies.", options: ["tallest", "taller", "more taller", "tall"], answer: "B" },
+            { question: "Janet is the ____ in the class.", options: ["tallest", "more taller", "most taller", "tall"], answer: "A" },
+            { question: "The farm was engulfed ____ flames.", options: ["with", "into", "in", "around"], answer: "C" },
+            { question: "I need to post a letter, could you direct me ____ a post office?", options: ["into", "to", "inside", "towards"], answer: "B" },
+            { question: "The forgery incident reflects badly ____ everyone involved.", options: ["in", "with", "at", "on"], answer: "D" },
+            { question: "The lion's face was reflected ____ the pond.", options: ["in", "under", "on", "at"], answer: "A" },
+            { question: "The leader of the rioting students ____ been arrested.", options: ["has", "have", "was", "is"], answer: "A" },
+            { question: "The founder and pioneer chancellor of the university ____ being commemorated today.", options: ["is", "are", "were", "would"], answer: "A" },
+            { question: "Bread and cheese ____ served every morning.", options: ["are", "were", "is", "would"], answer: "C" },
+            { question: "The contractor and the supervisor of the project ____ on the site.", options: ["are", "is", "was", "isn't"], answer: "A" },
+            { question: "The president with his cabinet ____ going to be present.", options: ["is", "are", "were", "are not"], answer: "A" },
+            { question: "The orange should be shared ____ Abdul Rahman, Taslimah and Fadhlullah.", options: ["between", "among", "within", "lyle"], answer: "B" },
+            { question: "Tunji is not ____ her brother.", options: ["that clever than", "as cleverer as", "as clever as", "cleverer as"], answer: "C" },
+            { question: "Abraham asked me ____.", options: ["To not come again", "not again to come", "to again not come", "not to come again"], answer: "D" },
+            { question: "Mr. Sola our Mathematics teacher has been teaching in our school ____ 1995.", options: ["as from", "since", "ago", "for since"], answer: "B" },
+            { question: "Ade's shirt is the same colour as ____.", options: ["he's", "him", "me", "mine"], answer: "D" },
+            { question: "Kayode and Isaac love ____ very dearly.", options: ["again", "one another", "each other", "themselves"], answer: "C" },
+            { question: "She has been here ____ the past three years.", options: ["since", "from", "for", "in"], answer: "C" },
+            { question: "If this book is neither mine nor yours, it must be ____.", options: ["somebody's else's", "somebody's else", "somebody else's", "somebody else"], answer: "C" },
+            { question: "By this time tomorrow, I ____ in Lagos.", options: ["am", "will be", "will have been", "have been"], answer: "C" },
+            { question: "We congratulated our brother ____ his success.", options: ["about", "for", "on", "at"], answer: "C" },
+            { question: "Who is the current President of the Academic Staff Union of Universities (ASUU)?", options: ["Prof. Mahmood Yakubu", "Prof. Emmanuel Osodeke", "Prof. Attahiru Jega", "Prof. Olayemi Cardoso"], answer: "B" },
+            { question: "Which is the largest continent by land area?", options: ["Africa", "Asia", "Europe", "Antarctica"], answer: "B" },
+            { question: "Which continent is known as the Dark Continent?", options: ["Asia", "Africa", "Australia", "Europe"], answer: "B" },
+            { question: "The sound of a cat is called ____.", options: ["Coo", "Meow", "Quack", "Growl"], answer: "B" },
+            { question: "A hen makes which sound?", options: ["Cluck", "Gobble", "Hiss", "Neigh"], answer: "A" },
+            { question: "What currency is used in Japan?", options: ["Rand", "Yuan", "Yen", "Dinar"], answer: "C" },
+            { question: "Who is the current Governor of the Central Bank of Nigeria?", options: ["Temi Popoola", "Olayemi Cardoso", "Godwin Emefiele", "Lamido Sanusi"], answer: "B" },
+            { question: "Who invented the telephone?", options: ["Thomas Alva Edison", "Galileo", "Alexander Graham Bell", "Thomas Graham Bell"], answer: "C" },
+            { question: "Nigeria celebrated her Silver Jubilee in the year ____.", options: ["1985", "2003", "1995", "2008"], answer: "A" },
+            { question: "Who hosted the 2006 world cup?", options: ["Germany", "Greece", "France", "England"], answer: "A" },
+            { question: "The longest river in Nigeria is river ____.", options: ["Benue", "Hadejia", "Niger", "Osun"], answer: "C" },
+            { question: "In which geo-political zone of Nigeria is Kwara state located?", options: ["North east", "North west", "North central", "South south", "East"], answer: "C" },
+            { question: "The highest court in Nigeria is the ____.", options: ["Federal High Court", "Supreme Court", "Federal Court", "Sharia Court"], answer: "B" },
+            { question: "The last military head of state in Nigeria was ____.", options: ["Sanni Abacha", "Ibrahim Babangida", "Abubakar Abdulsalam", "Muritala Muhammed"], answer: "C" },
+            { question: "The 1998 world cup was hosted and won by ____.", options: ["Brazil", "France", "England", "USA"], answer: "B" },
+            { question: "The place where water is found in the desert is called ____.", options: ["lake", "dam", "diff", "oasis"], answer: "D" },
+            { question: "Kumasi is in which of these countries?", options: ["Morocco", "Senegal", "Rwanda", "Niger", "Ghana"], answer: "E" },
+            { question: "Whose picture is shown on 100 naira note?", options: ["Tafawa Balewa", "Obafemi Awolowo", "Nnamdi Azikiwe", "Herbert Macaulay"], answer: "B" },
+            { question: "The capital city of Rwanda is ____.", options: ["Khartoum", "Kabul", "Kigali", "Kingston"], answer: "C" },
+            { question: "How many geopolitical zones is Nigeria divided into?", options: ["5", "4", "6", "7"], answer: "C" },
+            { question: "Which University is the premier university in Nigeria?", options: ["UNILORIN", "UNILAG", "OAU", "University of Ibadan"], answer: "D" },
+            { question: "UNILORIN was founded in?", options: ["1978", "1975", "1999", "1976"], answer: "B" },
+            { question: "University of Ilorin is a ____ generation University.", options: ["1st", "2nd", "3rd", "4th"], answer: "B" },
+            { question: "If John starts work at 8:45am and finishes at 5:15pm. He has 90 minutes of break. How many hours does he work in 5 days?", options: ["38", "39", "35", "40"], answer: "C" },
+            { question: "How many sides in a pentagon?", options: ["8", "6", "7", "5", "9"], answer: "D" },
+            { question: "(Antonyms) The presidential system is an antidote to some political ailments.", options: ["an answer", "a reply", "an inquiring", "an obstacle"], answer: "D" },
+            { question: "What is the Arabic figure of the Roman figure XCV?", options: ["99", "95", "105", "500"], answer: "B" },
+            { question: "A nursery rhyme is used to teach pupils how to spell the word ____.", options: ["hipoppotamus", "hippopotamus", "hipopotamus", "hippoppotamus"], answer: "B" },
+            { question: "An example of confluence town in Nigeria is ____.", options: ["Onitsha", "Obudu", "Lokoja", "PortHarcout"], answer: "C" },
+            { question: "The degree of hotness and coldness of a place is called ____.", options: ["rainfall", "humidity", "temperature", "weather"], answer: "C" },
+            { question: "Neither Agbo nor his parents ____ the meetings now.", options: ["Attended", "attends", "has attended", "attend"], answer: "D" },
+            { question: "Which of these is correctly spelt?", options: ["lenght", "lentgh", "length", "lenghtt", "lengtt"], answer: "C" },
+            { question: "When the beggar was tired, he ____ down by the road side.", options: ["Lied", "Laid", "Layed", "Lay", "Lain"], answer: "D" },
+            { question: "Atuk, without giving any hint as to what he intended to do, went and ____ himself.", options: ["Hung", "Hang", "Hanged", "Hunged"], answer: "C" },
+            { question: "Ten litres of water ____ to be consumed daily.", options: ["are", "is", "may", "have"], answer: "B" },
+            { question: "Round off 1.56 to 1 decimal place.", options: ["1.6", "1.56", "0.56", "1.5"], answer: "A" },
+            { question: "What principal will gain N168.00 simple interest in 4 years at 7.5%?", options: ["N280.00", "N480.00", "N560.00", "N720.00"], answer: "C" },
+            { question: "In what year did the Northern and Southern protectorate in Nigeria amalgamate?", options: ["1960", "1963", "1914", "1991"], answer: "C" },
+            { question: "Select the word with the correct stress pattern: Expostulate", options: ["exposTUlate", "expostuLATE", "EXpostulate", "exPOStulate"], answer: "D" },
+            { question: "The train ____ before I arrived.", options: ["was leaving", "was leaving", "had left", "would leave"], answer: "C" },
+            { question: "Jide and Mary met ____ the University of Ilorin carnival night.", options: ["at", "in", "on", "from"], answer: "A" },
+            { question: "Which of these is correctly spelt?", options: ["Lesure", "Leisure", "Liesure", "Lesiure"], answer: "B" },
+            { question: "Mt. Everest is located in ____.", options: ["London", "Moscow", "Beijing", "Nepal"], answer: "D" },
+            { question: "Which of these is correctly spelt?", options: ["Dirrhae", "Diarrhoea", "Diarrhea", "Diarrhae"], answer: "B" },
+            { question: "Find the perimeter of a rectangle whose length is 30cm and breadth is 0.15m.", options: ["30.15cm", "0.45cm", "90cm", "45cm"], answer: "C" },
+            { question: "50 men can build a house in 60 days. How many more men must be put on so as to finish a similar house in 40 days?", options: ["20 men", "30 men", "35 men", "25 men", "45 men"], answer: "D" },
+            { question: "Pastoral nomadism is a common characteristic of the ____.", options: ["Hausa", "Igbos", "Fulanis", "Yorubas", "Edos"], answer: "C" },
+            { question: "Each of the candidates that came late ____ to complete ____ form.", options: ["have/this", "are having/these", "has/this", "have/these"], answer: "C" },
+            { question: "He ____ arrived by now; I can hear all the people shouting.", options: ["would have", "must have", "has", "should have"], answer: "B" },
+            { question: "Arrange these in ascending order: 1/2, 2/3, 3/4, 4/5.", options: ["1/2, 2/3, 3/4, 4/5", "2/3, 1/2, 4/5, 3/4", "4/5, 3/4, 2/3, 1/2", "2/3, 3/4, 4/5, 1/2"], answer: "A" },
+        ];
+
+        // DOM Elements
+        const userInfoContainer = document.getElementById('user-info-container');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const userForm = document.getElementById('user-form');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const questionCounterEl = document.getElementById('question-counter');
+        const timerEl = document.getElementById('timer');
+        const progressBarEl = document.getElementById('progress-bar');
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const scoreTextEl = document.getElementById('score-text');
+        const feedbackTextEl = document.getElementById('feedback-text');
+        const reviewSectionEl = document.getElementById('review-section');
+        const questionPaletteEl = document.getElementById('question-palette');
+        const phoneInput = document.getElementById('phone');
+
+        // State
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let timer;
+        let timeLeft = 20 * 60;
+        let userData = {};
+
+        // Event Listeners
+        userForm.addEventListener('submit', handleFormSubmit);
+        prevBtn.addEventListener('click', showPreviousQuestion);
+        nextBtn.addEventListener('click', showNextQuestion);
+        restartBtn.addEventListener('click', () => location.reload());
+        phoneInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            userData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: `+234${document.getElementById('phone').value}`,
+            };
+            
+            const submitButton = userForm.querySelector('button');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Saving...';
+            
+            try {
+                const payload = { action: 'register-user', data: userData };
+                await saveDataToBackend(payload);
+                startQuiz();
+            } catch (error) {
+                alert('Could not start the assessment. Please check your connection and try again.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Start Assessment';
+            }
+        }
+
+        function startQuiz() {
+            userInfoContainer.classList.add('hidden');
+            quizContainer.classList.remove('hidden');
+            renderPalette();
+            navigateToQuestion(0);
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerEl.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 30) timerEl.style.color = 'var(--incorrect-border)';
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showResults();
+                }
+            }, 1000);
+        }
+        
+        function renderPalette() {
+            questionPaletteEl.innerHTML = '';
+            for (let i = 0; i < questions.length; i++) {
+                const btn = document.createElement('button');
+                btn.textContent = i + 1;
+                btn.classList.add('palette-btn');
+                if (userAnswers[i]) btn.classList.add('answered');
+                if (i === currentQuestionIndex) btn.classList.add('current');
+                btn.addEventListener('click', () => navigateToQuestion(i));
+                questionPaletteEl.appendChild(btn);
+            }
+        }
+        
+        function navigateToQuestion(index) {
+            currentQuestionIndex = index;
+            
+            quizContainer.classList.add('fade-out');
+            setTimeout(() => {
+                showQuestion();
+                renderPalette();
+                quizContainer.classList.remove('fade-out');
+            }, 400);
+        }
+
+        function showQuestion() {
+            resetOptionsState();
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+            progressBarEl.style.width = `${((Object.keys(userAnswers).length) / questions.length) * 100}%`;
+            questionTextEl.textContent = currentQuestion.question;
+
+            currentQuestion.options.forEach((option, index) => {
+                const optionEl = document.createElement('div');
+                optionEl.classList.add('option');
+                const optionLetter = String.fromCharCode(65 + index);
+                optionEl.innerHTML = `<strong>${optionLetter}.</strong> ${option}`;
+                optionEl.dataset.answer = optionLetter;
+                if (userAnswers[currentQuestionIndex] === optionLetter) {
+                    optionEl.classList.add('selected');
+                }
+                optionEl.addEventListener('click', () => selectOption(optionEl));
+                optionsContainerEl.appendChild(optionEl);
+            });
+
+            updateNavigationButtons();
+        }
+
+        function selectOption(selectedOptionEl) {
+            const options = optionsContainerEl.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            selectedOptionEl.classList.add('selected');
+            userAnswers[currentQuestionIndex] = selectedOptionEl.dataset.answer;
+            progressBarEl.style.width = `${((Object.keys(userAnswers).length) / questions.length) * 100}%`;
+            renderPalette();
+        }
+        
+        function updateNavigationButtons() {
+            prevBtn.disabled = currentQuestionIndex === 0;
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = 'Submit';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                navigateToQuestion(currentQuestionIndex - 1);
+            }
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                navigateToQuestion(currentQuestionIndex + 1);
+            } else {
+                showResults();
+            }
+        }
+        
+        async function showResults() {
+            clearInterval(timer);
+            const score = calculateScore();
+            const passThreshold = questions.length / 2;
+
+            const resultsData = { 
+                user: userData,
+                score, 
+                total: questions.length, 
+                answers: userAnswers 
+            };
+            
+            try {
+                const payload = { action: 'save-results', data: resultsData };
+                await saveDataToBackend(payload);
+            } catch (error) {
+                console.error("Could not save final results to backend, but showing them locally.", error);
+            }
+            
+            quizContainer.classList.add('hidden');
+            resultsContainer.classList.remove('hidden');
+
+            scoreTextEl.innerHTML = `You scored <strong>${score}</strong> out of ${questions.length}.`;
+
+            if (score >= passThreshold) {
+                feedbackTextEl.textContent = "Well done! You've passed the assessment.";
+                feedbackTextEl.className = 'pass';
+            } else {
+                feedbackTextEl.textContent = "You can do better. Review your answers below to improve.";
+                feedbackTextEl.className = 'fail';
+            }
+            renderReview();
+        }
+
+        function calculateScore() {
+            let score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].answer) {
+                    score++;
+                }
+            }
+            return score;
+        }
+
+        function renderReview() {
+            const reviewTitle = reviewSectionEl.querySelector('h2');
+            reviewSectionEl.innerHTML = '';
+            reviewSectionEl.appendChild(reviewTitle);
+
+            questions.forEach((q, index) => {
+                const userAnswer = userAnswers[index];
+                const correctAnswer = q.answer;
+
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('review-question');
+                
+                const questionP = document.createElement('p');
+                questionP.textContent = `${index + 1}. ${q.question}`;
+                questionDiv.appendChild(questionP);
+
+                q.options.forEach((opt, optIndex) => {
+                    const optionLetter = String.fromCharCode(65 + optIndex);
+                    const optionDiv = document.createElement('div');
+                    optionDiv.classList.add('review-option');
+                    optionDiv.textContent = `${optionLetter}. ${opt}`;
+
+                    if (optionLetter === correctAnswer) {
+                        optionDiv.classList.add('correct-answer');
+                    }
+                    if (optionLetter === userAnswer && userAnswer !== correctAnswer) {
+                        optionDiv.classList.add('user-answer', 'incorrect');
+                    }
+                    questionDiv.appendChild(optionDiv);
+                });
+                
+                if (!userAnswer) {
+                     const noAnswerDiv = document.createElement('div');
+                     noAnswerDiv.textContent = 'You did not answer this question.';
+                     noAnswerDiv.style.color = 'var(--secondary-text)';
+                     noAnswerDiv.style.marginTop = '10px';
+                     questionDiv.appendChild(noAnswerDiv);
+                }
+                reviewSectionEl.appendChild(questionDiv);
+            });
+        }
+        
+        function resetOptionsState() {
+            while (optionsContainerEl.firstChild) {
+                optionsContainerEl.removeChild(optionsContainerEl.firstChild);
+            }
+        }
+
+        /**
+         * Sends data to the backend API function.
+         * @param {object} payload The data object to send.
+         */
+        async function saveDataToBackend(payload) {
+            // This URL points to your serverless function. 
+            // Vercel automatically knows how to handle this.
+            const scriptUrl = '/api/submit-quiz'; 
+
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Data saved successfully:', result);
+            } catch (error) {
+                console.error('Error sending data to backend:', error);
+                throw error;
+            }
+        }
+    </script>
+</body>
+</html>
+

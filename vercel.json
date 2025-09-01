@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/submit-quiz.js": {
+      "maxDuration": 10
+    }
+  }
+}
