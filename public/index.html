@@ -97,8 +97,7 @@
             background: var(--primary-bg);
             border-color: var(--secondary-text);
         }
-
-        /* MODIFIED: Reduced button hover animation */
+        
         button:hover {
             transform: translateY(-1px);
             box-shadow: 0 3px 10px rgba(0,0,0,0.1);
@@ -187,23 +186,64 @@
         .option:hover { border-color: var(--accent-color); transform: translateX(5px); }
         .option.selected { border-color: var(--accent-hover); background-color: #fdfaf4; font-weight: 600; color: var(--accent-hover); }
 
-        .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
-        
-        /* MODIFIED: Responsive Grid for Question Palette */
+        .navigation { margin-top: 30px; display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center; }
+        #jump-to-btn { grid-column: 2; justify-self: center; }
+
+        /* NEW: Question Palette Drawer */
+        #palette-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 99;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+        #palette-backdrop.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        #palette-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--container-bg);
+            z-index: 100;
+            border-radius: 16px 16px 0 0;
+            padding: 20px;
+            max-height: 60%;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #palette-drawer.show {
+            transform: translateY(0);
+        }
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .drawer-header h3 { margin: 0; font-size: 1.2em; }
+        #close-palette-btn { font-size: 1.5em; cursor: pointer; color: var(--secondary-text); background: none; border: none; padding: 0 5px; box-shadow: none; }
         #question-palette {
-            margin-top: 30px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
             gap: 10px;
-            max-height: 160px; /* Limit height */
-            overflow-y: auto; /* Enable scrolling */
-            padding-right: 5px;
+            overflow-y: auto;
+            padding: 5px;
         }
         .palette-btn {
             width: 100%;
-            height: 45px;
+            height: 50px;
             border-radius: 8px;
             border: 2px solid var(--border-color);
             background-color: var(--container-bg);
@@ -239,12 +279,11 @@
         #correct-count { color: var(--correct-border); }
         #incorrect-count { color: var(--incorrect-border); }
         .results-actions { display: flex; justify-content: center; gap: 15px; }
-        /* MODIFIED: Smaller result buttons */
         .results-actions button { padding: 12px 28px; font-size: 1em; }
 
         /* Review Section & AI Feature */
-        #review-section { margin-top: 20px; text-align: left; width: 100%; }
         #review-container p { margin-top: 0; }
+        #review-section { margin-top: 20px; text-align: left; width: 100%; max-height: 60vh; overflow-y: auto; padding-right: 10px; }
         .review-question { background: #fdfdfd; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .review-question p { font-size: 1.1em; font-weight: 600; margin: 0 0 15px 0;}
         .review-option { padding: 10px; border-radius: 6px; margin-bottom: 8px; font-size: 1em; }
@@ -280,8 +319,6 @@
             .results-stats { grid-template-columns: 1fr; }
             .stat-item { padding-bottom: 15px; border-bottom: 1px solid var(--primary-bg); }
             .stat-item:last-child { border-bottom: none; }
-            #question-palette { grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); }
-            .palette-btn { height: 40px; }
         }
     </style>
 </head>
@@ -326,9 +363,9 @@
         <div id="options-container"></div>
         <div class="navigation">
             <button id="prev-btn" class="secondary">Previous</button>
+            <button id="jump-to-btn" class="secondary">Jump to Question</button>
             <button id="next-btn">Next</button>
         </div>
-        <div id="question-palette"></div>
     </div>
 
     <div id="results-container" class="container hidden">
@@ -363,16 +400,22 @@
         </div>
     </div>
 
-    <!-- MODIFIED: New container for the review section -->
     <div id="review-container" class="container hidden">
         <h2>Here's what you got right and wrong</h2>
         <p>Review your answers below. For incorrect answers, you can get an AI-powered explanation.</p>
-        <div id="review-section">
-            <!-- Dynamically populated -->
-        </div>
+        <div id="review-section"></div>
         <div class="navigation" style="justify-content: center; margin-top: 30px;">
             <button id="back-to-results-btn" class="secondary">Back to Results</button>
        </div>
+    </div>
+
+    <div id="palette-backdrop"></div>
+    <div id="palette-drawer">
+        <div class="drawer-header">
+            <h3>Jump to Question</h3>
+            <button id="close-palette-btn">&times;</button>
+        </div>
+        <div id="question-palette"></div>
     </div>
 
     <footer>
@@ -473,6 +516,7 @@
         const userForm = document.getElementById('user-form');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
+        const jumpToBtn = document.getElementById('jump-to-btn');
         const restartBtn = document.getElementById('restart-btn');
         const reviewBtn = document.getElementById('review-btn');
         const backToResultsBtn = document.getElementById('back-to-results-btn');
@@ -486,6 +530,9 @@
         const phoneInput = document.getElementById('phone');
         const errorMessageEl = document.getElementById('error-message');
         const errorTextEl = document.getElementById('error-text');
+        const paletteDrawer = document.getElementById('palette-drawer');
+        const paletteBackdrop = document.getElementById('palette-backdrop');
+        const closePaletteBtn = document.getElementById('close-palette-btn');
 
         // State
         let currentQuestionIndex = 0;
@@ -499,6 +546,12 @@
         userForm.addEventListener('submit', handleFormSubmit);
         prevBtn.addEventListener('click', showPreviousQuestion);
         nextBtn.addEventListener('click', showNextQuestion);
+        jumpToBtn.addEventListener('click', () => {
+            paletteDrawer.classList.add('show');
+            paletteBackdrop.classList.add('show');
+        });
+        closePaletteBtn.addEventListener('click', closePaletteDrawer);
+        paletteBackdrop.addEventListener('click', closePaletteDrawer);
         restartBtn.addEventListener('click', resetQuiz);
         reviewBtn.addEventListener('click', () => {
             resultsContainer.classList.add('hidden');
@@ -511,6 +564,11 @@
         phoneInput.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
+
+        function closePaletteDrawer() {
+            paletteDrawer.classList.remove('show');
+            paletteBackdrop.classList.remove('show');
+        }
 
         async function handleFormSubmit(e) {
             e.preventDefault();
@@ -599,6 +657,7 @@
         }
         
         function navigateToQuestion(index) {
+            closePaletteDrawer();
             currentQuestionIndex = index;
             
             quizContainer.classList.add('fade-out');
