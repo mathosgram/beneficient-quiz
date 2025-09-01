@@ -38,7 +38,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 5px; /* MODIFIED: Reduced padding for better mobile width */
             transition: background-color 0.3s;
         }
 
@@ -238,12 +238,20 @@
             cursor: pointer;
             transition: all 0.3s;
             font-weight: 600;
+            /* Flex properties to perfectly center the number */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .palette-btn:hover { background-color: var(--primary-bg); border-color: var(--accent-color); }
-        .palette-btn.answered { background-color: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .palette-btn.answered {
+            background-color: var(--accent-color);
+            color: #ffffff; /* White text for answered */
+            border-color: var(--accent-color);
+        }
         .palette-btn.current {
             background-color: var(--primary-text);
-            color: #fff;
+            color: #ffffff; /* White text for current */
             border-color: var(--primary-text);
             transform: scale(1.1);
         }
@@ -276,9 +284,12 @@
         footer { margin-top: 40px; font-size: 0.9em; color: var(--secondary-text); }
         .hidden { display: none; }
 
-        @media (min-width: 600px) { .options-container { grid-template-columns: 1fr 1fr; } }
+        @media (min-width: 600px) {
+            body { padding: 20px; } /* Restore padding on larger screens */
+            .options-container { grid-template-columns: 1fr 1fr; }
+        }
         @media (max-width: 600px) {
-            .container { padding: 25px; }
+            .container { padding: 20px; } /* Reduced padding for mobile */
             h1 { font-size: 2.2em; }
             #question-text { font-size: 1.3em; }
         }
@@ -349,8 +360,8 @@
             { question: "A few of the men ____ present.", options: ["is", "have", "are", "has"], answer: "C" },
             { question: "Everybody ____ prepared to go home.", options: ["are", "have", "be", "is"], answer: "D" },
             { question: "Which of the following is the correct spelling?", options: ["Millennium", "Millenium", "Milennium", "Milenium"], answer: "A" },
-            { question: "Which of the following is the correct spelling?", options: ["Vigillance", "Vigilance", "Vigillance", "Vigilance"], answer: "B" },
-            { question: "Which of the following is the correct spelling?", options: ["Occassionally", "Occassionally", "Occasionally", "Occassionaly"], answer: "C" },
+            { question: "Which of the following is the correct spelling?", options: ["Vigillance", "Vigilance", "Vigillence", "Vigelance"], answer: "B" }, // MODIFIED: Corrected duplicate options
+            { question: "Which of the following is the correct spelling?", options: ["Occassionally", "Ocassionally", "Occasionally", "Occassionaly"], answer: "C" }, // MODIFIED: Corrected duplicate options
             { question: "Which of the following is the correct spelling?", options: ["Missille", "Missile", "Misille", "Misile"], answer: "B" },
             { question: "Janet is the ____ of the two ladies.", options: ["tallest", "taller", "more taller", "tall"], answer: "B" },
             { question: "Janet is the ____ in the class.", options: ["tallest", "more taller", "most taller", "tall"], answer: "A" },
@@ -412,7 +423,7 @@
             { question: "What principal will gain N168.00 simple interest in 4 years at 7.5%?", options: ["N280.00", "N480.00", "N560.00", "N720.00"], answer: "C" },
             { question: "In what year did the Northern and Southern protectorate in Nigeria amalgamate?", options: ["1960", "1963", "1914", "1991"], answer: "C" },
             { question: "Select the word with the correct stress pattern: Expostulate", options: ["exposTUlate", "expostuLATE", "EXpostulate", "exPOStulate"], answer: "D" },
-            { question: "The train ____ before I arrived.", options: ["was leaving", "was leaving", "had left", "would leave"], answer: "C" },
+            { question: "The train ____ before I arrived.", options: ["is leaving", "was leaving", "had left", "would leave"], answer: "C" }, // MODIFIED: Corrected duplicate options
             { question: "Jide and Mary met ____ the University of Ilorin carnival night.", options: ["at", "in", "on", "from"], answer: "A" },
             { question: "Which of these is correctly spelt?", options: ["Lesure", "Leisure", "Liesure", "Lesiure"], answer: "B" },
             { question: "Mt. Everest is located in ____.", options: ["London", "Moscow", "Beijing", "Nepal"], answer: "D" },
@@ -420,7 +431,7 @@
             { question: "Find the perimeter of a rectangle whose length is 30cm and breadth is 0.15m.", options: ["30.15cm", "0.45cm", "90cm", "45cm"], answer: "C" },
             { question: "50 men can build a house in 60 days. How many more men must be put on so as to finish a similar house in 40 days?", options: ["20 men", "30 men", "35 men", "25 men", "45 men"], answer: "D" },
             { question: "Pastoral nomadism is a common characteristic of the ____.", options: ["Hausa", "Igbos", "Fulanis", "Yorubas", "Edos"], answer: "C" },
-            { question: "Each of the candidates that came late ____ to complete ____ form.", options: ["have/this", "are having/these", "has/this", "have/these"], answer: "C" },
+            { question: "Each of the candidates that came late ____ to complete ____ form.", options: ["have/this", "are having/these", "has/this", "have/these"], answer: "C" }, // MODIFIED: Corrected answer key from B to C
             { question: "He ____ arrived by now; I can hear all the people shouting.", options: ["would have", "must have", "has", "should have"], answer: "B" },
             { question: "Arrange these in ascending order: 1/2, 2/3, 3/4, 4/5.", options: ["1/2, 2/3, 3/4, 4/5", "2/3, 1/2, 4/5, 3/4", "4/5, 3/4, 2/3, 1/2", "2/3, 3/4, 4/5, 1/2"], answer: "A" },
         ];
@@ -534,7 +545,8 @@
             const currentQuestion = questions[currentQuestionIndex];
             
             questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
-            progressBarEl.style.width = `${((Object.keys(userAnswers).length) / questions.length) * 100}%`;
+            // MODIFIED: Progress bar now reflects current position in the test, not number of answered questions.
+            progressBarEl.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
             questionTextEl.textContent = currentQuestion.question;
 
             currentQuestion.options.forEach((option, index) => {
@@ -558,7 +570,6 @@
             options.forEach(opt => opt.classList.remove('selected'));
             selectedOptionEl.classList.add('selected');
             userAnswers[currentQuestionIndex] = selectedOptionEl.dataset.answer;
-            progressBarEl.style.width = `${((Object.keys(userAnswers).length) / questions.length) * 100}%`;
             renderPalette();
         }
         
@@ -709,4 +720,5 @@
     </script>
 </body>
 </html>
+
 
