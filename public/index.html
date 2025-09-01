@@ -22,6 +22,7 @@
             --incorrect-bg: #fff1f0;
             --incorrect-border: #f5222d;
             --shadow: 0 10px 20px rgba(0, 0, 0, 0.05), 0 6px 6px rgba(0, 0, 0, 0.07);
+            --ai-feature-bg: #e6e6fa; /* A light lavender for the AI feature */
         }
 
         *, *::before, *::after {
@@ -78,11 +79,10 @@
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* MODIFIED: Reduced shadow */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             letter-spacing: 0.5px;
         }
         
-        /* MODIFIED: Updated secondary button style */
         button.secondary {
              background: transparent;
              color: var(--secondary-text);
@@ -96,7 +96,7 @@
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.12); /* MODIFIED: Reduced hover shadow */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
 
         button:disabled {
@@ -247,17 +247,22 @@
 
         .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
         
+        /* Responsive Grid for Question Palette */
         #question-palette {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            justify-content: center;
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+            gap: 10px;
+            max-height: 160px; /* Limit height */
+            overflow-y: auto; /* Enable scrolling */
+            padding-right: 5px; /* For scrollbar */
         }
         
         .palette-btn {
-            width: 40px;
-            height: 40px;
+            width: 100%; /* Fill grid cell */
+            height: 45px;
             border-radius: 8px;
             border: 2px solid var(--border-color);
             background-color: var(--container-bg);
@@ -285,7 +290,7 @@
             color: #ffffff;
             border-color: var(--primary-text);
             transform: scale(1.1) translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* MODIFIED: Reduced shadow */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         /* Results Container */
@@ -317,6 +322,22 @@
         .review-option.user-answer.incorrect { background-color: var(--incorrect-bg); }
         .review-option.correct-answer { background-color: var(--correct-bg); font-weight: 600; }
         
+        .ai-explanation-container {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--ai-feature-bg);
+            border-radius: 8px;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        button.explain-btn {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+
         footer { margin-top: 40px; font-size: 0.9em; color: var(--secondary-text); }
         .hidden { display: none; }
 
@@ -584,9 +605,9 @@
                 await saveDataToBackend(payload);
                 startQuiz();
             } catch (error) {
-                 if (error.message.includes('409')) { // 409 Conflict for duplicates
+                 if (error.message.includes('409')) { 
                     errorTextEl.textContent = 'This email or phone number is already registered.';
-                 } else if (error.message.includes('403')) { // 403 Forbidden for max attempts
+                 } else if (error.message.includes('403')) {
                     errorTextEl.textContent = 'You have reached the maximum of 3 attempts.';
                  } else {
                     errorTextEl.textContent = 'Could not start. Please check your connection.';
@@ -809,6 +830,46 @@
             return score;
         }
 
+        async function getExplanation(index, button) {
+            button.disabled = true;
+            button.textContent = "Loading...";
+
+            const question = questions[index];
+            const userAnswerLetter = userAnswers[index];
+            const correctAnswerLetter = question.answer;
+
+            const userAnswerText = question.options[userAnswerLetter.charCodeAt(0) - 65];
+            const correctAnswerText = question.options[correctAnswerLetter.charCodeAt(0) - 65];
+
+            const explanationContainer = document.getElementById(`explanation-${index}`);
+            explanationContainer.style.display = 'block';
+            explanationContainer.textContent = '🧠 Generating explanation...';
+
+            try {
+                const response = await fetch('/api/get-explanation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        question: question.question,
+                        userAnswer: userAnswerText,
+                        correctAnswer: correctAnswerText
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to get explanation from server.');
+                }
+                const data = await response.json();
+                explanationContainer.textContent = data.explanation;
+
+            } catch(error) {
+                explanationContainer.textContent = 'Sorry, unable to get an explanation at this time.';
+                console.error("Error fetching explanation:", error);
+            } finally {
+                button.style.display = 'none'; // Hide button after it's used
+            }
+        }
+
         function renderReview() {
             const reviewTitle = reviewSectionEl.querySelector('h2');
             reviewSectionEl.innerHTML = '';
@@ -839,6 +900,20 @@
                     }
                     questionDiv.appendChild(optionDiv);
                 });
+                
+                if (userAnswer && userAnswer !== correctAnswer) {
+                    const explainButton = document.createElement('button');
+                    explainButton.textContent = '✨ Explain Answer';
+                    explainButton.classList.add('explain-btn', 'secondary');
+                    explainButton.onclick = () => getExplanation(index, explainButton);
+                    questionDiv.appendChild(explainButton);
+
+                    const explanationContainer = document.createElement('div');
+                    explanationContainer.id = `explanation-${index}`;
+                    explanationContainer.classList.add('ai-explanation-container');
+                    explanationContainer.style.display = 'none';
+                    questionDiv.appendChild(explanationContainer);
+                }
                 
                 if (!userAnswer) {
                      const noAnswerDiv = document.createElement('div');
@@ -873,7 +948,7 @@
                 
                 const result = await response.json();
                 console.log('Data saved successfully:', result);
-                return result; // Return the result from the backend
+                return result;
             } catch (error) {
                 console.error('Error sending data to backend:', error);
                 throw error;
