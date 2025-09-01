@@ -77,8 +77,8 @@
             background: linear-gradient(145deg, var(--accent-color), var(--accent-hover));
             color: #ffffff;
             border: none;
-            padding: 15px 35px;
-            font-size: 1.1em;
+            padding: 14px 30px;
+            font-size: 1em;
             font-weight: 600;
             border-radius: 50px;
             cursor: pointer;
@@ -186,64 +186,24 @@
         .option:hover { border-color: var(--accent-color); transform: translateX(5px); }
         .option.selected { border-color: var(--accent-hover); background-color: #fdfaf4; font-weight: 600; color: var(--accent-hover); }
 
-        .navigation { margin-top: 30px; display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: center; }
-        #jump-to-btn { grid-column: 2; justify-self: center; }
-
-        /* NEW: Question Palette Drawer */
-        #palette-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.4);
-            z-index: 99;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease-in-out;
-        }
-        #palette-backdrop.show {
-            opacity: 1;
-            pointer-events: all;
-        }
-        #palette-drawer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--container-bg);
-            z-index: 100;
-            border-radius: 16px 16px 0 0;
-            padding: 20px;
-            max-height: 60%;
-            display: flex;
-            flex-direction: column;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        #palette-drawer.show {
-            transform: translateY(0);
-        }
-        .drawer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .drawer-header h3 { margin: 0; font-size: 1.2em; }
-        #close-palette-btn { font-size: 1.5em; cursor: pointer; color: var(--secondary-text); background: none; border: none; padding: 0 5px; box-shadow: none; }
+        .navigation { margin-top: 30px; display: flex; justify-content: space-between; }
+        
+        /* Responsive Grid for Question Palette */
         #question-palette {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
             gap: 10px;
-            overflow-y: auto;
-            padding: 5px;
+            max-height: 160px; /* Limit height */
+            overflow-y: auto; /* Enable scrolling */
+            padding-right: 5px;
         }
+        
         .palette-btn {
             width: 100%;
-            height: 50px;
+            height: 45px;
             border-radius: 8px;
             border: 2px solid var(--border-color);
             background-color: var(--container-bg);
@@ -279,7 +239,7 @@
         #correct-count { color: var(--correct-border); }
         #incorrect-count { color: var(--incorrect-border); }
         .results-actions { display: flex; justify-content: center; gap: 15px; }
-        .results-actions button { padding: 12px 28px; font-size: 1em; }
+        .results-actions button { padding: 10px 24px; font-size: 0.95em; }
 
         /* Review Section & AI Feature */
         #review-container p { margin-top: 0; }
@@ -363,9 +323,9 @@
         <div id="options-container"></div>
         <div class="navigation">
             <button id="prev-btn" class="secondary">Previous</button>
-            <button id="jump-to-btn" class="secondary">Jump to Question</button>
             <button id="next-btn">Next</button>
         </div>
+        <div id="question-palette"></div>
     </div>
 
     <div id="results-container" class="container hidden">
@@ -408,16 +368,7 @@
             <button id="back-to-results-btn" class="secondary">Back to Results</button>
        </div>
     </div>
-
-    <div id="palette-backdrop"></div>
-    <div id="palette-drawer">
-        <div class="drawer-header">
-            <h3>Jump to Question</h3>
-            <button id="close-palette-btn">&times;</button>
-        </div>
-        <div id="question-palette"></div>
-    </div>
-
+    
     <footer>
         <p>Powered by Imoogle Technology</p>
     </footer>
@@ -516,7 +467,6 @@
         const userForm = document.getElementById('user-form');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        const jumpToBtn = document.getElementById('jump-to-btn');
         const restartBtn = document.getElementById('restart-btn');
         const reviewBtn = document.getElementById('review-btn');
         const backToResultsBtn = document.getElementById('back-to-results-btn');
@@ -530,9 +480,6 @@
         const phoneInput = document.getElementById('phone');
         const errorMessageEl = document.getElementById('error-message');
         const errorTextEl = document.getElementById('error-text');
-        const paletteDrawer = document.getElementById('palette-drawer');
-        const paletteBackdrop = document.getElementById('palette-backdrop');
-        const closePaletteBtn = document.getElementById('close-palette-btn');
 
         // State
         let currentQuestionIndex = 0;
@@ -546,12 +493,6 @@
         userForm.addEventListener('submit', handleFormSubmit);
         prevBtn.addEventListener('click', showPreviousQuestion);
         nextBtn.addEventListener('click', showNextQuestion);
-        jumpToBtn.addEventListener('click', () => {
-            paletteDrawer.classList.add('show');
-            paletteBackdrop.classList.add('show');
-        });
-        closePaletteBtn.addEventListener('click', closePaletteDrawer);
-        paletteBackdrop.addEventListener('click', closePaletteDrawer);
         restartBtn.addEventListener('click', resetQuiz);
         reviewBtn.addEventListener('click', () => {
             resultsContainer.classList.add('hidden');
@@ -564,11 +505,6 @@
         phoneInput.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
-
-        function closePaletteDrawer() {
-            paletteDrawer.classList.remove('show');
-            paletteBackdrop.classList.remove('show');
-        }
 
         async function handleFormSubmit(e) {
             e.preventDefault();
@@ -657,7 +593,6 @@
         }
         
         function navigateToQuestion(index) {
-            closePaletteDrawer();
             currentQuestionIndex = index;
             
             quizContainer.classList.add('fade-out');
@@ -897,7 +832,7 @@
                 const result = await response.json();
                 console.log('Data saved successfully:', result);
                 return result;
-            } catch (error) {
+            } catch (error)
                 console.error('Error sending data to backend:', error);
                 throw error;
             }
@@ -905,4 +840,5 @@
     </script>
 </body>
 </html>
+" and want to add an AI feature to it. For this I need an API key. Please add the necessary code changes.
 
